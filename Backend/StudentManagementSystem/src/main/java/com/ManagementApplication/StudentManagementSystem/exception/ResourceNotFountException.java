@@ -1,4 +1,7 @@
 package com.ManagementApplication.StudentManagementSystem.exception;
 
-public class ResourceNotFountException {
+public class ResourceNotFoundException extends RuntimeException {
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
 }
