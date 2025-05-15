@@ -1,4 +1,4 @@
-package com.ManagementApplication.StudentManagementSystem.console;
+package com.ManagementApplication.StudentManagementSystem.controller;
 
 import com.ManagementApplication.StudentManagementSystem.dto.StudentDTO;
 import com.ManagementApplication.StudentManagementSystem.service.StudentService;
