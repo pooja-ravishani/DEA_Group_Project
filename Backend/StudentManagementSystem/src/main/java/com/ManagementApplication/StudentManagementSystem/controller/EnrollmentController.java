@@ -1,4 +1,4 @@
-package com.ManagementApplication.StudentManagementSystem.console;
+package com.ManagementApplication.StudentManagementSystem.controller;
 
 import com.studentmanagement.StudentManagementSystem.dto.EnrollmentDTO;
 import com.studentmanagement.StudentManagementSystem.service.EnrollmentService;
