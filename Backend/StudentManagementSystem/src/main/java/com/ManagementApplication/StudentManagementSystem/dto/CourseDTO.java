@@ -1,43 +1,49 @@
 package com.ManagementApplication.StudentManagementSystem.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-
-public class CourseDTO {
-
-    private Integer id;
-
-    @NotBlank(message = "Course code is required")
-    private String courseCode;
-
-    @NotBlank(message = "Course name is required")
+public class CourseDto {
+    private Long id;
     private String courseName;
-
+    private String courseCode;
     private String description;
+    private Integer credits;
 
-    @NotNull(message = "Credit hours is required")
-    @Min(value = 1, message = "Credit hours must be at least 1")
-    private Integer creditHours;
+    public Long getId() {
+        return id;
+    }
 
-    private String department;
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    private Integer teacherId;
+    public String getCourseName() {
+        return courseName;
+    }
 
-    private TeacherDTO teacher;
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
 
-    private Boolean active;
+    public String getCourseCode() {
+        return courseCode;
+    }
 
-    private LocalDateTime createdAt;
+    public void setCourseCode(String courseCode) {
+        this.courseCode = courseCode;
+    }
 
-    private LocalDateTime updatedAt;
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getCredits() {
+        return credits;
+    }
+
+    public void setCredits(Integer credits) {
+        this.credits = credits;
+    }
 }
