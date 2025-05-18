@@ -1,6 +1,6 @@
-package com.rehan.sms.repositories;
+package com.ManagementApplication.StudentManagementSystem.repository;
 
-import com.rehan.sms.entities.Grade;
+import com.ManagementApplication.StudentManagementSystem.entity.Grade;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
