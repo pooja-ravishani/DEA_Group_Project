@@ -2,7 +2,7 @@ package com.ManagementApplication.StudentManagementSystem.controller;
 
 package com.ManagementApplication.StudentManagementSystem.GradeDto;
 package com.ManagementApplication.StudentManagementSystem.exception.ResourceNotFoundException;
-package com.ManagementApplication.StudentManagementSystem.services.GradeService;
+package com.ManagementApplication.StudentManagementSystem.service.GradeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
