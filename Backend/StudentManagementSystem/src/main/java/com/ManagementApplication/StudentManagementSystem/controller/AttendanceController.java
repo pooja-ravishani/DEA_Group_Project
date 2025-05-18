@@ -1,106 +1,82 @@
 package com.ManagementApplication.StudentManagementSystem.controller;
 
-
-import com.studentmanagement.StudentManagementSystem.dto.AttendanceDTO;
-import com.studentmanagement.StudentManagementSystem.service.AttendanceService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
+import com.ManagementApplication.StudentManagementSystem.dto.AttendanceDto;
+import com.ManagementApplication.StudentManagementSystem.exception.ResourceNotFoundException;
+import com.ManagementApplication.StudentManagementSystem.service.AttendanceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
+@CrossOrigin("*")
 @RestController
-@RequestMapping("/api/attendances")
+@RequestMapping("/api/attendance")
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
 
-    @Autowired
     public AttendanceController(AttendanceService attendanceService) {
         this.attendanceService = attendanceService;
     }
 
     @GetMapping
-    public ResponseEntity<List<AttendanceDTO>> getAllAttendances() {
-        return ResponseEntity.ok(attendanceService.getAllAttendance());
+    public ResponseEntity<List<AttendanceDto>> getAllAttendanceRecords() {
+        return ResponseEntity.ok(attendanceService.getAllAttendanceRecords());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AttendanceDTO> getAttendanceById(@PathVariable Integer id) {
-        AttendanceDTO attendance = attendanceService.getAttendanceById(id);
-        return attendance != null ? ResponseEntity.ok(attendance) : ResponseEntity.notFound().build();
+    public ResponseEntity<AttendanceDto> getAttendanceById(@PathVariable Long id) {
+        return ResponseEntity.ok(attendanceService.getAttendanceById(id));
     }
 
     @GetMapping("/student/{studentId}")
-    public ResponseEntity<List<AttendanceDTO>> getAttendancesByStudentId(@PathVariable Integer studentId) {
-        List<AttendanceDTO> attendances = attendanceService.getAttendanceByStudentId(studentId);
-        return ResponseEntity.ok(attendances);
+    public ResponseEntity<List<AttendanceDto>> getAttendanceByStudentId(@PathVariable Long studentId) {
+        return ResponseEntity.ok(attendanceService.getAttendanceByStudentId(studentId));
     }
 
     @GetMapping("/course/{courseId}")
-    public ResponseEntity<List<AttendanceDTO>> getAttendancesByCourseId(@PathVariable Integer courseId) {
-        List<AttendanceDTO> attendances = attendanceService.getAttendanceByCourseId(courseId);
-        return ResponseEntity.ok(attendances);
+    public ResponseEntity<List<AttendanceDto>> getAttendanceByCourseId(@PathVariable Long courseId) {
+        return ResponseEntity.ok(attendanceService.getAttendanceByCourseId(courseId));
     }
 
     @GetMapping("/date/{date}")
-    public ResponseEntity<List<AttendanceDTO>> getAttendancesByDate(
-            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        List<AttendanceDTO> attendances = attendanceService.getAttendanceByDate(date);
-        return ResponseEntity.ok(attendances);
-    }
-
-    @GetMapping("/course/{courseId}/date/{date}")
-    public ResponseEntity<List<AttendanceDTO>> getAttendancesByCourseAndDate(
-            @PathVariable Integer courseId,
-            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        List<AttendanceDTO> attendances = attendanceService.getAttendanceByCourseIdAndDateRange(courseId, date, date);
-        return ResponseEntity.ok(attendances);
-    }
-
-    @GetMapping("/student/{studentId}/course/{courseId}")
-    public ResponseEntity<List<AttendanceDTO>> getAttendancesByStudentAndCourse(
-            @PathVariable Integer studentId,
-            @PathVariable Integer courseId) {
-        List<AttendanceDTO> attendances = attendanceService.getAttendanceByStudentIdAndCourseId(studentId, courseId);
-        return ResponseEntity.ok(attendances);
-    }
-
-    @GetMapping("/student/{studentId}/course/{courseId}/daterange")
-    public ResponseEntity<List<AttendanceDTO>> getAttendancesByDateRange(
-            @PathVariable Integer studentId,
-            @PathVariable Integer courseId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        List<AttendanceDTO> attendances = attendanceService.getAttendanceByStudentIdAndDateRange(studentId, startDate, endDate);
-        return ResponseEntity.ok(attendances);
-    }
-
-    @GetMapping("/status/{status}")
-    public ResponseEntity<List<AttendanceDTO>> getAttendancesByStatus(@PathVariable String status) {
-        // This endpoint needs to be implemented in the service layer
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    public ResponseEntity<List<AttendanceDto>> getAttendanceByDate(@PathVariable String date) {
+        return ResponseEntity.ok(attendanceService.getAttendanceByDate(date));
     }
 
     @PostMapping
-    public ResponseEntity<AttendanceDTO> createAttendance(@Valid @RequestBody AttendanceDTO attendanceDTO) {
-        AttendanceDTO createdAttendance = attendanceService.createAttendance(attendanceDTO);
-        return new ResponseEntity<>(createdAttendance, HttpStatus.CREATED);
+    public ResponseEntity<?> createAttendance(@RequestBody AttendanceDto attendanceDto) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(attendanceService.createAttendance(attendanceDto));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AttendanceDTO> updateAttendance(@PathVariable Integer id, @Valid @RequestBody AttendanceDTO attendanceDTO) {
-        AttendanceDTO updatedAttendance = attendanceService.updateAttendance(id, attendanceDTO);
-        return ResponseEntity.ok(updatedAttendance);
+    public ResponseEntity<?> updateAttendanceById(@PathVariable Long id,
+            @RequestBody AttendanceDto attendanceDto) {
+        try {
+            return ResponseEntity.ok(attendanceService.updateAttendanceById(id, attendanceDto));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAttendance(@PathVariable Integer id) {
-        attendanceService.deleteAttendance(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteAttendanceById(@PathVariable Long id) {
+        try {
+            attendanceService.deleteAttendanceById(id);
+            return ResponseEntity.ok(Map.of(
+                    "message", "Attendance record deleted successfully",
+                    "id", id));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 }
