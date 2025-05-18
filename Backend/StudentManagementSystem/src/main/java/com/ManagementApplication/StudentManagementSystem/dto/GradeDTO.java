@@ -1,4 +1,4 @@
-package com.rehan.sms.dto;
+package com.ManagementApplication.StudentManagementSystem.dto;
 
 public class GradeDto {
     private Long id;
