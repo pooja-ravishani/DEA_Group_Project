@@ -1,31 +1,31 @@
-package com.ManagementApplication.StudentManagementSystem.repository;
+package com.rehan.sms.repositories;
 
-import com.studentmanagement.StudentManagementSystem.entity.Course;
-import com.studentmanagement.StudentManagementSystem.entity.Enrollment;
-import com.studentmanagement.StudentManagementSystem.entity.Student;
+import com.rehan.sms.entities.Enrollment;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
+import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer> {
+public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
-    List<Enrollment> findByStudent(Student student);
+    @EntityGraph(attributePaths = { "student", "course", "course.teacher" })
+    @Query("SELECT e FROM Enrollment e")
+    List<Enrollment> findAllWithRelationships();
 
-    List<Enrollment> findByCourse(Course course);
+    @EntityGraph(attributePaths = { "student", "course", "course.teacher" })
+    @Query("SELECT e FROM Enrollment e WHERE e.id = :id")
+    Optional<Enrollment> findByIdWithRelationships(Long id);
 
-    List<Enrollment> findByStudentAndSemesterAndAcademicYear(Student student, String semester, String academicYear);
+    @EntityGraph(attributePaths = { "student", "course", "course.teacher" })
+    @Query("SELECT e FROM Enrollment e WHERE e.student.id = :studentId")
+    List<Enrollment> findByStudentId(Long studentId);
 
-    List<Enrollment> findByCourseAndSemesterAndAcademicYear(Course course, String semester, String academicYear);
+    @EntityGraph(attributePaths = { "student", "course", "course.teacher" })
+    @Query("SELECT e FROM Enrollment e WHERE e.course.id = :courseId")
+    List<Enrollment> findByCourseId(Long courseId);
 
-    List<Enrollment> findBySemesterAndAcademicYear(String semester, String academicYear);
-
-    List<Enrollment> findByEnrollmentStatus(String enrollmentStatus);
-
-    Optional<Enrollment> findByStudentAndCourse(Student student, Course course);
-
-    boolean existsByStudentAndCourseAndSemesterAndAcademicYear(Student student, Course course, String semester, String academicYear);
+    @EntityGraph(attributePaths = { "student", "course", "course.teacher" })
+    @Query("SELECT e FROM Enrollment e WHERE e.student.id = :studentId AND e.course.id = :courseId")
+    List<Enrollment> findByStudentIdAndCourseId(Long studentId, Long courseId);
 }
-
