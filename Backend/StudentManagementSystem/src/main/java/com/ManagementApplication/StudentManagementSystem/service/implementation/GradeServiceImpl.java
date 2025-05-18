@@ -1,15 +1,15 @@
-package com.rehan.sms.services.impl;
+package com.ManagementApplication.StudentManagementSystem.service.implementation;
 
-import com.rehan.sms.dto.GradeDto;
-import com.rehan.sms.entities.Course;
-import com.rehan.sms.entities.Grade;
-import com.rehan.sms.entities.Student;
-import com.rehan.sms.exception.ResourceNotFoundException;
-import com.rehan.sms.mapper.GradeMapper;
-import com.rehan.sms.repositories.CourseRepository;
-import com.rehan.sms.repositories.GradeRepository;
-import com.rehan.sms.repositories.StudentRepository;
-import com.rehan.sms.services.GradeService;
+import com.ManagementApplication.StudentManagementSystem.dto.GradeDto;
+import com.ManagementApplication.StudentManagementSystem.entity.Course;
+import com.ManagementApplication.StudentManagementSystem.entity.Grade;
+import com.ManagementApplication.StudentManagementSystem.entity.Student;
+import com.ManagementApplication.StudentManagementSystem.exception.ResourceNotFoundException;
+import com.ManagementApplication.StudentManagementSystem.mapper.GradeMapper;
+import com.ManagementApplication.StudentManagementSystem.repository.CourseRepository;
+import com.ManagementApplication.StudentManagementSystem.repository.GradeRepository;
+import com.ManagementApplication.StudentManagementSystem.repository.StudentRepository;
+import com.ManagementApplication.StudentManagementSystem.service.GradeService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
