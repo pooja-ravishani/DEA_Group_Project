@@ -1,36 +1,21 @@
-package com.ManagementApplication.StudentManagementSystem.service;
+package com.rehan.sms.services;
 
-import com.studentmanagement.StudentManagementSystem.dto.EnrollmentDTO;
-
-import java.time.LocalDateTime;
-
+import com.rehan.sms.dto.EnrollmentDto;
+import com.rehan.sms.exception.ResourceNotFoundException;
 import java.util.List;
 
 public interface EnrollmentService {
+    List<EnrollmentDto> getAllEnrollments();
 
-    EnrollmentDTO createEnrollment(EnrollmentDTO enrollmentDTO);
+    EnrollmentDto getEnrollmentById(Long id) throws ResourceNotFoundException;
 
-    EnrollmentDTO getEnrollmentById(Integer id);
+    EnrollmentDto createEnrollment(EnrollmentDto enrollmentDto);
 
-    List<EnrollmentDTO> getAllEnrollments();
+    EnrollmentDto updateEnrollmentById(Long id, EnrollmentDto enrollmentDto) throws ResourceNotFoundException;
 
-    List<EnrollmentDTO> getEnrollmentsByStudentId(Integer studentId);
+    void deleteEnrollmentById(Long id) throws ResourceNotFoundException;
 
-    List<EnrollmentDTO> getEnrollmentsByCourseId(Integer courseId);
+    List<EnrollmentDto> getEnrollmentsByStudentId(Long studentId);
 
-    List<EnrollmentDTO> getEnrollmentsByStudentIdAndSemester(Integer studentId, String semester, String academicYear);
-
-    List<EnrollmentDTO> getEnrollmentsByCourseIdAndSemester(Integer courseId, String semester, String academicYear);
-
-    List<EnrollmentDTO> getEnrollmentsByStatus(String status);
-
-    EnrollmentDTO updateEnrollment(Integer id, EnrollmentDTO enrollmentDTO);
-
-    void deleteEnrollment(Integer id);
-
-    EnrollmentDTO enrollStudentInCourse(Integer studentId, Integer courseId, String semester, String academicYear);
-
-    EnrollmentDTO withdrawStudentFromCourse(Integer enrollmentId, LocalDateTime withdrawDate);
-
-    boolean isStudentEnrolledInCourse(Integer studentId, Integer courseId, String semester, String academicYear);
+    List<EnrollmentDto> getEnrollmentsByCourseId(Long courseId);
 }
