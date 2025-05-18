@@ -1,4 +1,4 @@
-package com.rehan.sms.controllers;
+package com.ManagementApplication.StudentManagementSystem.controller;
 
 import com.rehan.sms.dto.StudentDto;
 import com.rehan.sms.exception.ResourceNotFoundException;
