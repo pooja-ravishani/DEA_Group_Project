@@ -1,4 +1,4 @@
-package com.rehan.sms.entities;
+package com.ManagementApplication.StudentManagementSystem.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
