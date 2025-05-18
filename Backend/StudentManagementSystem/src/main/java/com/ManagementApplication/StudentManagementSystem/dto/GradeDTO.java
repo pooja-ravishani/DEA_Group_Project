@@ -1,52 +1,68 @@
-package com.ManagementApplication.StudentManagementSystem.dto;
+package com.rehan.sms.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public class GradeDto {
+    private Long id;
+    private Long studentId;
+    private Long courseId;
+    private String gradeValue;
+    private String comments;
 
-import java.time.LocalDateTime;
+    private StudentDto student;
+    private CourseDto course;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+    public Long getId() {
+        return id;
+    }
 
-public class GradeDTO {
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    private Integer id;
+    public Long getStudentId() {
+        return studentId;
+    }
 
-    @NotNull(message = "Student ID is required")
-    private Integer studentId;
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
+    }
 
-    private StudentDTO student;
+    public Long getCourseId() {
+        return courseId;
+    }
 
-    @NotNull(message = "Course ID is required")
-    private Integer courseId;
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
 
-    private CourseDTO course;
+    public String getGradeValue() {
+        return gradeValue;
+    }
 
-    @NotBlank(message = "Academic term is required")
-    private String academicTerm;
+    public void setGradeValue(String gradeValue) {
+        this.gradeValue = gradeValue;
+    }
 
-    @NotBlank(message = "Grade type is required")
-    private String gradeType;
+    public String getComments() {
+        return comments;
+    }
 
-    private String assignment;
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
 
-    @PositiveOrZero(message = "Score must be zero or positive")
-    private Float score;
+    public StudentDto getStudent() {
+        return student;
+    }
 
-    private String letterGrade;
+    public void setStudent(StudentDto student) {
+        this.student = student;
+    }
 
-    private LocalDateTime gradedAt;
+    public CourseDto getCourse() {
+        return course;
+    }
 
-    @NotNull(message = "Graded by ID is required")
-    private Integer gradedById;
-
-    private UserDTO gradedBy;
-
-    private String remarks;
+    public void setCourse(CourseDto course) {
+        this.course = course;
+    }
 }
-
