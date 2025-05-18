@@ -1,43 +1,48 @@
 package com.ManagementApplication.StudentManagementSystem.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public class StudentDto {
 
-import java.time.LocalDate;
+    private Long id;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+    private String firstName;
 
-public class StudentDTO {
+    private String lastName;
 
-    private Integer id;
+    private String email;
 
-    @NotNull(message = "User ID is required")
-    private Integer userId;
+    public Long getId() {
+        return id;
+    }
 
-    private UserDTO user;
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    @NotBlank(message = "Student ID is required")
-    private String studentId;
+    public String getFirstName() {
+        return firstName;
+    }
 
-    private String contactNumber;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-    @Past(message = "Date of birth must be in the past")
-    private LocalDate dateOfBirth;
+    public String getLastName() {
+        return lastName;
+    }
 
-    private String address;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-    @NotNull(message = "Enrollment year is required")
-    private Integer enrollmentYear;
+    public String getEmail() {
+        return email;
+    }
 
-    private String department;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+}
 
-    private String programOfStudy;
 
     private String currentSemester;
 
