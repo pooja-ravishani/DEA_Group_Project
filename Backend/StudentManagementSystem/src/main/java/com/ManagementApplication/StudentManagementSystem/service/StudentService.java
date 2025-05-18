@@ -1,31 +1,18 @@
 package com.ManagementApplication.StudentManagementSystem.service;
 
-import com.ManagementApplication.StudentManagementSystem.dto.StudentDTO;
+import com.ManagementApplication.StudentManagementSystem.dto.StudentDto;
+import com.ManagementApplication.StudentManagementSystem.exception.ResourceNotFoundException;
 
 import java.util.List;
 
 public interface StudentService {
+    List<StudentDto> getAllStudents();
 
-    StudentDTO createStudent(StudentDTO studentDTO);
+    StudentDto getStudentById(Long id) throws ResourceNotFoundException;
 
-    StudentDTO getStudentById(Integer id);
+    StudentDto createStudent(StudentDto studentDto);
 
-    StudentDTO getStudentByStudentId(String studentId);
+    StudentDto updateStudent(Long id, StudentDto studentDto) throws ResourceNotFoundException;
 
-    StudentDTO getStudentByUserId(Integer userId);
-
-    List<StudentDTO> getAllStudents();
-
-    List<StudentDTO> getStudentsByDepartment(String department);
-
-    List<StudentDTO> getStudentsByEnrollmentYear(Integer enrollmentYear);
-
-    List<StudentDTO> getStudentsByCurrentSemester(String currentSemester);
-
-    StudentDTO updateStudent(Integer id, StudentDTO studentDTO);
-
-    void deleteStudent(Integer id);
-
-    boolean isStudentIdExists(String studentId);
+    void deleteStudent(Long id) throws ResourceNotFoundException;
 }
-
