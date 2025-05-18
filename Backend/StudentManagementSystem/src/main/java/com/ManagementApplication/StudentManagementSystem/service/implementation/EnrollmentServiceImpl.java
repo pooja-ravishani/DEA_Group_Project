@@ -1,15 +1,15 @@
-package com.rehan.sms.services.impl;
+package com.ManagementApplication.StudentManagementSystem.services.implementation;
 
-import com.rehan.sms.dto.EnrollmentDto;
-import com.rehan.sms.entities.Course;
-import com.rehan.sms.entities.Enrollment;
-import com.rehan.sms.entities.Student;
-import com.rehan.sms.exception.ResourceNotFoundException;
-import com.rehan.sms.mapper.EnrollmentMapper;
-import com.rehan.sms.repositories.CourseRepository;
-import com.rehan.sms.repositories.EnrollmentRepository;
-import com.rehan.sms.repositories.StudentRepository;
-import com.rehan.sms.services.EnrollmentService;
+import com.ManagementApplication.StudentManagementSystem.dto.EnrollmentDto;
+import com.ManagementApplication.StudentManagementSystem.entity.Course;
+import com.ManagementApplication.StudentManagementSystem.entity.Enrollment;
+import com.ManagementApplication.StudentManagementSystem.entity.Student;
+import com.ManagementApplication.StudentManagementSystem.exception.ResourceNotFoundException;
+import com.ManagementApplication.StudentManagementSystem.mapper.EnrollmentMapper;
+import com.ManagementApplication.StudentManagementSystem.repository.CourseRepository;
+import com.ManagementApplication.StudentManagementSystem.repository.EnrollmentRepository;
+import com.ManagementApplication.StudentManagementSystem.repository.StudentRepository;
+import com.ManagementApplication.StudentManagementSystem.service.EnrollmentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
