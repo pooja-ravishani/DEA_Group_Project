@@ -1,34 +1,17 @@
 package com.ManagementApplication.StudentManagementSystem.service;
 
-import com.studentmanagement.StudentManagementSystem.dto.CourseDTO;
-
+import com.ManagementApplication.StudentManagementSystem.dto.CourseDto;
+import com.ManagementApplication.StudentManagementSystem.exception.ResourceNotFoundException;
 import java.util.List;
 
 public interface CourseService {
+    List<CourseDto> getAllCourses();
 
-    CourseDTO createCourse(CourseDTO courseDTO);
+    CourseDto getCourseById(Long id) throws ResourceNotFoundException;
 
-    CourseDTO getCourseById(Integer id);
+    CourseDto createCourse(CourseDto courseDto);
 
-    CourseDTO getCourseByCourseCode(String courseCode);
+    CourseDto updateCourse(Long id, CourseDto courseDto) throws ResourceNotFoundException;
 
-    List<CourseDTO> getAllCourses();
-
-    List<CourseDTO> getCoursesByDepartment(String department);
-
-    List<CourseDTO> getCoursesByTeacherId(Integer teacherId);
-
-    List<CourseDTO> getActiveCourses();
-
-    CourseDTO updateCourse(Integer id, CourseDTO courseDTO);
-
-    void deleteCourse(Integer id);
-
-    boolean isCourseCodeExists(String courseCode);
-
-    void assignTeacherToCourse(Integer courseId, Integer teacherId);
-
-    void activateCourse(Integer id);
-
-    void deactivateCourse(Integer id);
+    void deleteCourse(Long id) throws ResourceNotFoundException;
 }
