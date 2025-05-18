@@ -1,88 +1,77 @@
-package com.ManagementApplication.StudentManagementSystem.controller;
+package com.rehan.sms.controllers;
 
-import com.studentmanagement.StudentManagementSystem.dto.EnrollmentDTO;
-import com.studentmanagement.StudentManagementSystem.service.EnrollmentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.rehan.sms.dto.EnrollmentDto;
+import com.rehan.sms.exception.ResourceNotFoundException;
+import com.rehan.sms.services.EnrollmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/enrollments")
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
 
-    @Autowired
     public EnrollmentController(EnrollmentService enrollmentService) {
         this.enrollmentService = enrollmentService;
     }
 
     @GetMapping
-    public ResponseEntity<List<EnrollmentDTO>> getAllEnrollments() {
+    public ResponseEntity<List<EnrollmentDto>> getAllEnrollments() {
         return ResponseEntity.ok(enrollmentService.getAllEnrollments());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EnrollmentDTO> getEnrollmentById(@PathVariable Integer id) {
-        EnrollmentDTO enrollment = enrollmentService.getEnrollmentById(id);
-        return enrollment != null ? ResponseEntity.ok(enrollment) : ResponseEntity.notFound().build();
+    public ResponseEntity<EnrollmentDto> getEnrollmentById(@PathVariable Long id) {
+        return ResponseEntity.ok(enrollmentService.getEnrollmentById(id));
     }
 
     @GetMapping("/student/{studentId}")
-    public ResponseEntity<List<EnrollmentDTO>> getEnrollmentsByStudentId(@PathVariable Integer studentId) {
-        List<EnrollmentDTO> enrollments = enrollmentService.getEnrollmentsByStudentId(studentId);
-        return ResponseEntity.ok(enrollments);
+    public ResponseEntity<List<EnrollmentDto>> getEnrollmentsByStudentId(@PathVariable Long studentId) {
+        return ResponseEntity.ok(enrollmentService.getEnrollmentsByStudentId(studentId));
     }
 
     @GetMapping("/course/{courseId}")
-    public ResponseEntity<List<EnrollmentDTO>> getEnrollmentsByCourseId(@PathVariable Integer courseId) {
-        List<EnrollmentDTO> enrollments = enrollmentService.getEnrollmentsByCourseId(courseId);
-        return ResponseEntity.ok(enrollments);
-    }
-
-    @GetMapping("/student/{studentId}/semester/{semester}/academic-year/{academicYear}")
-    public ResponseEntity<List<EnrollmentDTO>> getEnrollmentsByStudentAndSemester(
-            @PathVariable Integer studentId,
-            @PathVariable String semester,
-            @PathVariable String academicYear) {
-        List<EnrollmentDTO> enrollments = enrollmentService.getEnrollmentsByStudentIdAndSemester(studentId, semester, academicYear);
-        return ResponseEntity.ok(enrollments);
-    }
-
-    @GetMapping("/course/{courseId}/semester/{semester}/academic-year/{academicYear}")
-    public ResponseEntity<List<EnrollmentDTO>> getEnrollmentsByCourseAndSemester(
-            @PathVariable Integer courseId,
-            @PathVariable String semester,
-            @PathVariable String academicYear) {
-        List<EnrollmentDTO> enrollments = enrollmentService.getEnrollmentsByCourseIdAndSemester(courseId, semester, academicYear);
-        return ResponseEntity.ok(enrollments);
-    }
-
-    @GetMapping("/status/{status}")
-    public ResponseEntity<List<EnrollmentDTO>> getEnrollmentsByStatus(@PathVariable String status) {
-        List<EnrollmentDTO> enrollments = enrollmentService.getEnrollmentsByStatus(status);
-        return ResponseEntity.ok(enrollments);
+    public ResponseEntity<List<EnrollmentDto>> getEnrollmentsByCourseId(@PathVariable Long courseId) {
+        return ResponseEntity.ok(enrollmentService.getEnrollmentsByCourseId(courseId));
     }
 
     @PostMapping
-    public ResponseEntity<EnrollmentDTO> createEnrollment(@Valid @RequestBody EnrollmentDTO enrollmentDTO) {
-        EnrollmentDTO createdEnrollment = enrollmentService.createEnrollment(enrollmentDTO);
-        return new ResponseEntity<>(createdEnrollment, HttpStatus.CREATED);
+    public ResponseEntity<?> createEnrollment(@RequestBody EnrollmentDto enrollmentDto) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(enrollmentService.createEnrollment(enrollmentDto));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EnrollmentDTO> updateEnrollment(@PathVariable Integer id, @Valid @RequestBody EnrollmentDTO enrollmentDTO) {
-        EnrollmentDTO updatedEnrollment = enrollmentService.updateEnrollment(id, enrollmentDTO);
-        return ResponseEntity.ok(updatedEnrollment);
+    public ResponseEntity<?> updateEnrollmentById(@PathVariable Long id,
+            @RequestBody EnrollmentDto enrollmentDto) {
+        try {
+            return ResponseEntity.ok(enrollmentService.updateEnrollmentById(id, enrollmentDto));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEnrollment(@PathVariable Integer id) {
-        enrollmentService.deleteEnrollment(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteEnrollmentById(@PathVariable Long id) {
+        try {
+            enrollmentService.deleteEnrollmentById(id);
+            return ResponseEntity.ok(Map.of(
+                    "message", "Enrollment deleted successfully",
+                    "id", id));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 }
