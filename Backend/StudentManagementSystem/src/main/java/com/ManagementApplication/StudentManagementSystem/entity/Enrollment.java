@@ -1,107 +1,31 @@
-package com.ManagementApplication.StudentManagementSystem.entity;
+package com.rehan.sms.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import java.time.LocalDate;
 
-import java.time.LocalDateTime;
-
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "enrollments")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Enrollment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id")
     private Student student;
 
-    @ManyToOne
-    @JoinColumn(name = "course_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id")
     private Course course;
 
-    @Column(nullable = false)
+    private LocalDate enrollmentDate;
+    private String status; // ACTIVE, COMPLETED, DROPPED
     private String semester;
-
-    @Column(name = "academic_year", nullable = false)
-    private String academicYear;
-
-    @Column(name = "enrollment_status", nullable = false)
-    private String enrollmentStatus;
-
-    @Column(name = "enrollment_date", nullable = false)
-    private LocalDateTime enrollmentDate;
-
-    @Column(name = "withdraw_date")
-    private LocalDateTime withdrawDate;
-
-    public void setEnrollmentDate(LocalDateTime enrollmentDate) {
-        this.enrollmentDate = enrollmentDate;
-    }
-
-    public LocalDateTime getEnrollmentDate() {
-        return enrollmentDate;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setStudent(Student student) {
-        this.student = student;
-    }
-
-    public Student getStudent() {
-        return student;
-    }
-
-    public void setCourse(Course course) {
-        this.course = course;
-    }
-
-    public Course getCourse() {
-        return course;
-    }
-
-    public void setSemester(String semester) {
-        this.semester = semester;
-    }
-
-    public String getSemester() {
-        return semester;
-    }
-
-    public void setAcademicYear(String academicYear) {
-        this.academicYear = academicYear;
-    }
-
-    public String getAcademicYear() {
-        return academicYear;
-    }
-
-    public void setEnrollmentStatus(String enrollmentStatus) {
-        this.enrollmentStatus = enrollmentStatus;
-    }
-
-    public String getEnrollmentStatus() {
-        return enrollmentStatus;
-    }
-
-    public void setWithdrawDate(LocalDateTime withdrawDate) {
-        this.withdrawDate = withdrawDate;
-    }
-
-    public LocalDateTime getWithdrawDate() {
-        return withdrawDate;
-    }
+    private Integer academicYear;
 }
