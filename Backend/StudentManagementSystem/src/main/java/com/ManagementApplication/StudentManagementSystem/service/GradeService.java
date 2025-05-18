@@ -1,39 +1,23 @@
-package com.ManagementApplication.StudentManagementSystem.service;
+package com.rehan.sms.services;
 
-import com.ManagementApplication.StudentManagementSystem.dto.GradeDTO;
-
+import com.rehan.sms.dto.GradeDto;
+import com.rehan.sms.exception.ResourceNotFoundException;
 import java.util.List;
 
-import java.util.Map;
-
 public interface GradeService {
+    List<GradeDto> getAllGrades();
 
-    GradeDTO createGrade(GradeDTO gradeDTO);
+    GradeDto getGradeById(Long id) throws ResourceNotFoundException;
 
-    GradeDTO getGradeById(Integer id);
+    GradeDto createGrade(GradeDto gradeDto);
 
-    List<GradeDTO> getAllGrades();
+    GradeDto updateGradeById(Long id, GradeDto gradeDto) throws ResourceNotFoundException;
 
-    List<GradeDTO> getGradesByStudentId(Integer studentId);
+    void deleteGradeById(Long id) throws ResourceNotFoundException;
 
-    List<GradeDTO> getGradesByCourseId(Integer courseId);
+    List<GradeDto> getGradesByStudentId(Long studentId);
 
-    List<GradeDTO> getGradesByStudentIdAndCourseId(Integer studentId, Integer courseId);
+    List<GradeDto> getGradesByCourseId(Long courseId);
 
-    List<GradeDTO> getGradesByAcademicTerm(String academicTerm);
-
-    List<GradeDTO> getGradesByStudentIdAndAcademicTerm(Integer studentId, String academicTerm);
-
-    List<GradeDTO> getGradesByCourseIdAndAcademicTerm(Integer courseId, String academicTerm);
-
-    List<GradeDTO> getGradesByGradeType(String gradeType);
-
-    Map<String, Object> getStudentCourseGradesSummary(Integer studentId, Integer courseId);
-
-    GradeDTO updateGrade(Integer id, GradeDTO gradeDTO);
-
-    void deleteGrade(Integer id);
-
-    List<GradeDTO> createBulkGrades(List<GradeDTO> gradeDTOs);
+    List<GradeDto> getGradesByStudentIdAndCourseId(Long studentId, Long courseId);
 }
-
