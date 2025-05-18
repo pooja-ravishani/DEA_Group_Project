@@ -1,41 +1,27 @@
 package com.ManagementApplication.StudentManagementSystem.service;
 
-import com.studentmanagement.StudentManagementSystem.dto.AttendanceDTO;
-
+import com.ManagementApplication.StudentManagementSystem.dto.AttendanceDto;
 import java.time.LocalDate;
-
 import java.util.List;
 
-import java.util.Map;
-
 public interface AttendanceService {
+    List<AttendanceDto> getAllAttendanceRecords();
 
-    AttendanceDTO createAttendance(AttendanceDTO attendanceDTO);
+    AttendanceDto getAttendanceById(Long id);
 
-    AttendanceDTO getAttendanceById(Integer id);
+    List<AttendanceDto> getAttendanceByStudentId(Long studentId);
 
-    List<AttendanceDTO> getAllAttendance();
+    List<AttendanceDto> getAttendanceByCourseId(Long courseId);
 
-    List<AttendanceDTO> getAttendanceByStudentId(Integer studentId);
+    List<AttendanceDto> getAttendanceByDate(String date);
 
-    List<AttendanceDTO> getAttendanceByStudentIdAndCourseId(Integer studentId, Integer courseId);
+    List<AttendanceDto> getAttendanceByStudentIdAndDate(Long studentId, LocalDate date);
 
-    List<AttendanceDTO> getAttendanceByCourseId(Integer courseId);
+    List<AttendanceDto> getAttendanceByCourseIdAndDate(Long courseId, LocalDate date);
 
-    List<AttendanceDTO> getAttendanceByDate(LocalDate date);
+    AttendanceDto createAttendance(AttendanceDto attendanceDto);
 
-    List<AttendanceDTO> getAttendanceByDateRange(LocalDate startDate, LocalDate endDate);
+    AttendanceDto updateAttendanceById(Long id, AttendanceDto attendanceDto);
 
-    List<AttendanceDTO> getAttendanceByStudentIdAndDateRange(Integer studentId, LocalDate startDate, LocalDate endDate);
-
-    List<AttendanceDTO> getAttendanceByCourseIdAndDateRange(Integer courseId, LocalDate startDate, LocalDate endDate);
-
-    Map<String, Double> getAttendanceStatsByStudentId(Integer studentId, Integer courseId);
-
-    AttendanceDTO updateAttendance(Integer id, AttendanceDTO attendanceDTO);
-
-    void deleteAttendance(Integer id);
-
-    List<AttendanceDTO> markBulkAttendance(Integer courseId, LocalDate date, List<AttendanceDTO> attendanceDTOs, Integer recordedById);
+    void deleteAttendanceById(Long id);
 }
-
