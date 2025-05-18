@@ -1,7 +1,7 @@
-package com.rehan.sms.services;
+package com.ManagementApplication.StudentManagementSystem.service;
 
-import com.rehan.sms.dto.GradeDto;
-import com.rehan.sms.exception.ResourceNotFoundException;
+import com.ManagementApplication.StudentManagementSystem.dto.GradeDto;
+import com.ManagementApplication.StudentManagementSystem.exception.ResourceNotFoundException;
 import java.util.List;
 
 public interface GradeService {
