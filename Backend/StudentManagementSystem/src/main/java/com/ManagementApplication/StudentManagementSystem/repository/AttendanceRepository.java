@@ -1,44 +1,32 @@
 package com.ManagementApplication.StudentManagementSystem.repository;
 
-import com.studentmanagement.StudentManagementSystem.entity.Attendance;
-import com.studentmanagement.StudentManagementSystem.entity.Course;
-import com.studentmanagement.StudentManagementSystem.entity.Student;
+import com.ManagementApplication.StudentManagementSystem.entity.Attendance;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
+import org.springframework.data.jpa.repository.Query;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface AttendanceRepository extends JpaRepository<Attendance, Integer> {
+public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
-    List<Attendance> findByStudent(Student student);
+    @EntityGraph(attributePaths = { "student", "course", "course.teacher" })
+    @Query("SELECT a FROM Attendance a")
+    List<Attendance> findAllWithRelationships();
 
-    List<Attendance> findByCourse(Course course);
+    @EntityGraph(attributePaths = { "student", "course", "course.teacher" })
+    @Query("SELECT a FROM Attendance a WHERE a.id = :id")
+    Optional<Attendance> findByIdWithRelationships(Long id);
 
-    List<Attendance> findByStudentAndCourse(Student student, Course course);
+    List<Attendance> findByStudentId(Long studentId);
 
-    List<Attendance> findByAttendanceDate(LocalDate attendanceDate);
+    List<Attendance> findByCourseId(Long courseId);
 
-    List<Attendance> findByAttendanceDateBetween(LocalDate startDate, LocalDate endDate);
+    List<Attendance> findByStudentIdAndCourseId(Long studentId, Long courseId);
 
-    List<Attendance> findByStudentAndAttendanceDateBetween(Student student, LocalDate startDate, LocalDate endDate);
+    List<Attendance> findByDate(LocalDate date);
 
-    List<Attendance> findByCourseAndAttendanceDateBetween(Course course, LocalDate startDate, LocalDate endDate);
+    List<Attendance> findByStudentIdAndDate(Long studentId, LocalDate date);
 
-    Optional<Attendance> findByStudentAndCourseAndAttendanceDate(Student student, Course course, LocalDate attendanceDate);
-
-    List<Attendance> findByStatus(String status);
-
-    // Additional methods for direct ID queries
-    List<Attendance> findByStudentId(Integer studentId);
-
-    List<Attendance> findByCourseId(Integer courseId);
-
-    List<Attendance> findByStudentIdAndCourseId(Integer studentId, Integer courseId);
-
-    List<Attendance> findByStudentIdAndAttendanceDateBetween(Integer studentId, LocalDate startDate, LocalDate endDate);
-
-    List<Attendance> findByCourseIdAndAttendanceDateBetween(Integer courseId, LocalDate startDate, LocalDate endDate);
+    List<Attendance> findByCourseIdAndDate(Long courseId, LocalDate date);
 }
