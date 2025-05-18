@@ -1,173 +1,214 @@
 package com.ManagementApplication.StudentManagementSystem.service.implementation;
 
-import com.studentmanagement.StudentManagementSystem.dto.AttendanceDTO;
-import com.studentmanagement.StudentManagementSystem.entity.Attendance;
-import com.studentmanagement.StudentManagementSystem.exception.ResourceNotFoundException;
-import com.studentmanagement.StudentManagementSystem.repository.AttendanceRepository;
-import com.studentmanagement.StudentManagementSystem.service.AttendanceService;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ManagementApplication.StudentManagementSystem.dto.AttendanceDto;
+import com.ManagementApplication.StudentManagementSystem.entity.Attendance;
+import com.ManagementApplication.StudentManagementSystem.entity.Course;
+import com.ManagementApplication.StudentManagementSystem.entity.Student;
+import com.ManagementApplication.StudentManagementSystem.exception.ResourceNotFoundException;
+import com.ManagementApplication.StudentManagementSystem.mapper.AttendanceMapper;
+import com.ManagementApplication.StudentManagementSystem.repository.AttendanceRepository;
+import com.ManagementApplication.StudentManagementSystem.repository.CourseRepository;
+import com.ManagementApplication.StudentManagementSystem.repository.StudentRepository;
+import com.ManagementApplication.StudentManagementSystem.service.AttendanceService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class AttendanceServiceImpl implements AttendanceService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AttendanceServiceImpl.class);
+
     private final AttendanceRepository attendanceRepository;
-    private final ModelMapper modelMapper;
+    private final StudentRepository studentRepository;
+    private final CourseRepository courseRepository;
 
-    @Autowired
-    public AttendanceServiceImpl(AttendanceRepository attendanceRepository, ModelMapper modelMapper) {
+    public AttendanceServiceImpl(AttendanceRepository attendanceRepository,
+            StudentRepository studentRepository,
+            CourseRepository courseRepository) {
         this.attendanceRepository = attendanceRepository;
-        this.modelMapper = modelMapper;
+        this.studentRepository = studentRepository;
+        this.courseRepository = courseRepository;
     }
 
     @Override
-    public List<AttendanceDTO> getAllAttendance() {
-        return attendanceRepository.findAll().stream()
-                .map(attendance -> modelMapper.map(attendance, AttendanceDTO.class))
+    @Transactional(readOnly = true)
+    public List<AttendanceDto> getAllAttendanceRecords() {
+        return attendanceRepository.findAllWithRelationships().stream()
+                .map(AttendanceMapper::attendanceDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public AttendanceDTO getAttendanceById(Integer id) {
-        return attendanceRepository.findById(id)
-                .map(attendance -> modelMapper.map(attendance, AttendanceDTO.class))
-                .orElseThrow(() -> new ResourceNotFoundException("Attendance record not found with id: " + id));
+    @Transactional(readOnly = true)
+    public AttendanceDto getAttendanceById(Long id) {
+        Attendance attendance = attendanceRepository.findByIdWithRelationships(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Attendance not found with id: " + id));
+        return AttendanceMapper.attendanceDto(attendance);
     }
 
     @Override
-    public AttendanceDTO createAttendance(AttendanceDTO attendanceDTO) {
-        Attendance attendance = modelMapper.map(attendanceDTO, Attendance.class);
-        attendance.setRecordedAt(LocalDateTime.now());
-        Attendance savedAttendance = attendanceRepository.save(attendance);
-        return modelMapper.map(savedAttendance, AttendanceDTO.class);
-    }
+    @Transactional
+    public AttendanceDto createAttendance(AttendanceDto attendanceDto) {
+        try {
+            logger.info("Creating attendance with data: {}", attendanceDto);
 
-    @Override
-    public AttendanceDTO updateAttendance(Integer id, AttendanceDTO attendanceDTO) {
-        Attendance existingAttendance = attendanceRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Attendance record not found with id: " + id));
+            // Validate the attendance data
+            if (attendanceDto.getStudentId() == null) {
+                throw new IllegalArgumentException("Student ID cannot be null");
+            }
 
-        modelMapper.map(attendanceDTO, existingAttendance);
-        existingAttendance.setId(id); // Ensure ID is preserved
-        existingAttendance.setRecordedAt(LocalDateTime.now());
+            if (attendanceDto.getCourseId() == null) {
+                throw new IllegalArgumentException("Course ID cannot be null");
+            }
 
-        Attendance updatedAttendance = attendanceRepository.save(existingAttendance);
-        return modelMapper.map(updatedAttendance, AttendanceDTO.class);
-    }
+            // Convert string date to LocalDate if needed
+            if (attendanceDto.getDate() == null) {
+                throw new IllegalArgumentException("Date cannot be null");
+            }
 
-    @Override
-    public void deleteAttendance(Integer id) {
-        if (!attendanceRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Attendance record not found with id: " + id);
+            // Create attendance entity
+            Attendance attendance = new Attendance();
+
+            // Set the date from the DTO
+            if (attendanceDto.getDate() instanceof String) {
+                try {
+                    attendance.setDate(LocalDate.parse((String) attendanceDto.getDate()));
+                } catch (DateTimeParseException e) {
+                    logger.error("Error parsing date: {}", attendanceDto.getDate());
+                    throw new IllegalArgumentException("Invalid date format");
+                }
+            } else if (attendanceDto.getDate() instanceof LocalDate) {
+                attendance.setDate((LocalDate) attendanceDto.getDate());
+            }
+
+            // Set status
+            attendance.setStatus(attendanceDto.getStatus());
+
+            // Set remarks if available
+            attendance.setRemarks(attendanceDto.getRemarks());
+
+            // Find and set student
+            Student student = studentRepository.findById(attendanceDto.getStudentId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Student not found with id: " + attendanceDto.getStudentId()));
+            attendance.setStudent(student);
+
+            // Find and set course
+            Course course = courseRepository.findById(attendanceDto.getCourseId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Course not found with id: " + attendanceDto.getCourseId()));
+            attendance.setCourse(course);
+
+            // Save the attendance record
+            Attendance savedAttendance = attendanceRepository.save(attendance);
+            logger.info("Successfully saved attendance with ID: {}", savedAttendance.getId());
+
+            return AttendanceMapper.attendanceDto(savedAttendance);
+        } catch (Exception e) {
+            logger.error("Error creating attendance", e);
+            throw e;
         }
-        attendanceRepository.deleteById(id);
     }
 
     @Override
-    public List<AttendanceDTO> getAttendanceByStudentId(Integer studentId) {
+    @Transactional
+    public AttendanceDto updateAttendanceById(Long id, AttendanceDto attendanceDto) {
+        Attendance attendance = attendanceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Attendance not found with id: " + id));
+
+        // Handle date conversion if needed
+        if (attendanceDto.getDate() != null) {
+            if (attendanceDto.getDate() instanceof String) {
+                try {
+                    attendance.setDate(LocalDate.parse((String) attendanceDto.getDate()));
+                } catch (DateTimeParseException e) {
+                    throw new IllegalArgumentException("Invalid date format");
+                }
+            } else if (attendanceDto.getDate() instanceof LocalDate) {
+                attendance.setDate((LocalDate) attendanceDto.getDate());
+            }
+        }
+
+        // Update status if provided
+        if (attendanceDto.getStatus() != null) {
+            attendance.setStatus(attendanceDto.getStatus());
+        }
+
+        // Update remarks if provided
+        attendance.setRemarks(attendanceDto.getRemarks());
+
+        // Update student if provided
+        if (attendanceDto.getStudentId() != null) {
+            Student student = studentRepository.findById(attendanceDto.getStudentId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Student not found with id: " + attendanceDto.getStudentId()));
+            attendance.setStudent(student);
+        }
+
+        // Update course if provided
+        if (attendanceDto.getCourseId() != null) {
+            Course course = courseRepository.findById(attendanceDto.getCourseId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Course not found with id: " + attendanceDto.getCourseId()));
+            attendance.setCourse(course);
+        }
+
+        return AttendanceMapper.attendanceDto(attendanceRepository.save(attendance));
+    }
+
+    @Override
+    @Transactional
+    public void deleteAttendanceById(Long id) {
+        Attendance attendance = attendanceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Attendance not found with id: " + id));
+        attendanceRepository.delete(attendance);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AttendanceDto> getAttendanceByStudentId(Long studentId) {
         return attendanceRepository.findByStudentId(studentId).stream()
-                .map(attendance -> modelMapper.map(attendance, AttendanceDTO.class))
+                .map(AttendanceMapper::attendanceDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<AttendanceDTO> getAttendanceByCourseId(Integer courseId) {
+    @Transactional(readOnly = true)
+    public List<AttendanceDto> getAttendanceByCourseId(Long courseId) {
         return attendanceRepository.findByCourseId(courseId).stream()
-                .map(attendance -> modelMapper.map(attendance, AttendanceDTO.class))
+                .map(AttendanceMapper::attendanceDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<AttendanceDTO> getAttendanceByDate(LocalDate date) {
-        return attendanceRepository.findByAttendanceDate(date).stream()
-                .map(attendance -> modelMapper.map(attendance, AttendanceDTO.class))
+    @Transactional(readOnly = true)
+    public List<AttendanceDto> getAttendanceByDate(String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        return attendanceRepository.findByDate(localDate).stream()
+                .map(AttendanceMapper::attendanceDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<AttendanceDTO> getAttendanceByDateRange(LocalDate startDate, LocalDate endDate) {
-        return attendanceRepository.findByAttendanceDateBetween(startDate, endDate).stream()
-                .map(attendance -> modelMapper.map(attendance, AttendanceDTO.class))
+    @Transactional(readOnly = true)
+    public List<AttendanceDto> getAttendanceByStudentIdAndDate(Long studentId, LocalDate date) {
+        return attendanceRepository.findByStudentIdAndDate(studentId, date).stream()
+                .map(AttendanceMapper::attendanceDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<AttendanceDTO> getAttendanceByStudentIdAndDateRange(Integer studentId, LocalDate startDate, LocalDate endDate) {
-        return attendanceRepository.findByStudentIdAndAttendanceDateBetween(studentId, startDate, endDate).stream()
-                .map(attendance -> modelMapper.map(attendance, AttendanceDTO.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<AttendanceDTO> getAttendanceByCourseIdAndDateRange(Integer courseId, LocalDate startDate, LocalDate endDate) {
-        return attendanceRepository.findByCourseIdAndAttendanceDateBetween(courseId, startDate, endDate).stream()
-                .map(attendance -> modelMapper.map(attendance, AttendanceDTO.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<AttendanceDTO> getAttendanceByStudentIdAndCourseId(Integer studentId, Integer courseId) {
-        return attendanceRepository.findByStudentIdAndCourseId(studentId, courseId).stream()
-                .map(attendance -> modelMapper.map(attendance, AttendanceDTO.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Map<String, Double> getAttendanceStatsByStudentId(Integer studentId, Integer courseId) {
-        List<AttendanceDTO> attendances = getAttendanceByStudentIdAndCourseId(studentId, courseId);
-        Map<String, Double> stats = new HashMap<>();
-
-        if (attendances.isEmpty()) {
-            stats.put("attendanceRate", 0.0);
-            stats.put("presentCount", 0.0);
-            stats.put("absentCount", 0.0);
-            stats.put("lateCount", 0.0);
-            return stats;
-        }
-
-        long totalClasses = attendances.size();
-        long presentCount = attendances.stream()
-                .filter(a -> "PRESENT".equalsIgnoreCase(a.getStatus()))
-                .count();
-        long absentCount = attendances.stream()
-                .filter(a -> "ABSENT".equalsIgnoreCase(a.getStatus()))
-                .count();
-        long lateCount = attendances.stream()
-                .filter(a -> "LATE".equalsIgnoreCase(a.getStatus()))
-                .count();
-
-        stats.put("attendanceRate", (double) presentCount / totalClasses * 100);
-        stats.put("presentCount", (double) presentCount);
-        stats.put("absentCount", (double) absentCount);
-        stats.put("lateCount", (double) lateCount);
-
-        return stats;
-    }
-
-    @Override
-    public List<AttendanceDTO> markBulkAttendance(Integer courseId, LocalDate date, List<AttendanceDTO> attendanceDTOs, Integer recordedById) {
-        List<Attendance> attendances = attendanceDTOs.stream()
-                .map(dto -> {
-                    Attendance attendance = modelMapper.map(dto, Attendance.class);
-                    attendance.setCourseId(courseId);
-                    attendance.setAttendanceDate(date);
-                    attendance.setRecordedById(recordedById);
-                    attendance.setRecordedAt(LocalDateTime.now());
-                    return attendance;
-                })
-                .collect(Collectors.toList());
-
-        List<Attendance> savedAttendances = attendanceRepository.saveAll(attendances);
-        return savedAttendances.stream()
-                .map(attendance -> modelMapper.map(attendance, AttendanceDTO.class))
+    @Transactional(readOnly = true)
+    public List<AttendanceDto> getAttendanceByCourseIdAndDate(Long courseId, LocalDate date) {
+        return attendanceRepository.findByCourseIdAndDate(courseId, date).stream()
+                .map(AttendanceMapper::attendanceDto)
                 .collect(Collectors.toList());
     }
 }
