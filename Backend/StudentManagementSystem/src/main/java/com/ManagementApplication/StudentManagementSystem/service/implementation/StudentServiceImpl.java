@@ -5,7 +5,7 @@ import com.ManagementApplication.StudentManagementSystem.entity.Student;
 import com.ManagementApplication.StudentManagementSystem.exception.ResourceNotFoundException;
 import com.ManagementApplication.StudentManagementSystem.mapper.StudentMapper;
 import com.ManagementApplication.StudentManagementSystem.repository.StudentRepository;
-import com.ManagementApplication.StudentManagementSystem.services.StudentService;
+import com.ManagementApplication.StudentManagementSystem.service.StudentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
