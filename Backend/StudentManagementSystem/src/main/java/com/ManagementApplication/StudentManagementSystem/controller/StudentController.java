@@ -1,8 +1,8 @@
 package com.ManagementApplication.StudentManagementSystem.controller;
 
-import com.rehan.sms.dto.StudentDto;
-import com.rehan.sms.exception.ResourceNotFoundException;
-import com.rehan.sms.services.StudentService;
+import com.ManagementApplication.StudentManagementSystem.dto.StudentDto;
+import com.ManagementApplication.StudentManagementSystem.exception.ResourceNotFoundException;
+import com.ManagementApplication.StudentManagementSystem.services.StudentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
