@@ -1,0 +1,53 @@
+# Ignore Maven build directory
+/target/
+
+# Ignore IntelliJ IDEA project files
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Ignore Eclipse project files
+.classpath
+.project
+.settings/
+.apt_generated
+.factorypath
+.springBeans
+.sts4-cache
+
+# Ignore NetBeans project files
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore log files
+*.log
+
+# Ignore environment files
+.env
+.env.*
+
+# Ignore compiled class files
+*.class
+
+# Ignore generated files
+*.jar
+*.war
+*.ear
+
+# Ignore virtual machine crash logs
+hs_err_pid*
+
+# Ignore Maven wrapper files (optional)
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
